@@ -1,0 +1,13 @@
+[package]
+name = "mandybrot"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+ndarray = { version = "0.16.1", features = ["rayon"] }
+rayon = "1.10.0"
+
+[dev-dependencies]
+enterpolation = "0.2.1"
+ndarray_images = "0.1.0"
+palette = "0.7.6"
