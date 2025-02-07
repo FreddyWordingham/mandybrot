@@ -1,7 +1,7 @@
 use enterpolation::{linear::ConstEquidistantLinear, Generator};
 use ndarray::{stack, Array2, Array3, Axis};
 use ndarray_images::Image;
-use palette::{LinSrgb, Srgb};
+use palette::LinSrgb;
 
 use mandybrot::{sample_area, Complex};
 
