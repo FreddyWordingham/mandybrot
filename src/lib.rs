@@ -34,7 +34,6 @@ where
 
     let x_res_t = T::from(x_res);
     let y_res_t = T::from(y_res);
-
     let half_x_res = x_res_t / T::from(2);
     let half_y_res = y_res_t / T::from(2);
 
@@ -43,19 +42,22 @@ where
 
     let mut samples = Array2::<u32>::zeros((y_res as usize, x_res as usize));
 
+    // Parallel row processing with direct mutable chunks
     samples
-        .axis_iter_mut(ndarray::Axis(0))
-        .into_par_iter()
+        .as_slice_mut()
+        .unwrap()
+        .par_chunks_mut(x_res as usize)
         .enumerate()
-        .for_each(|(y, mut row)| {
+        .for_each(|(y, row)| {
             let y_t = T::from(y as u32);
-            let y_coord = centre.imag + (y_t - half_y_res) * y_step;
+            let y_offset = (y_t - half_y_res) * y_step;
+            let y_coord = centre.imag + y_offset;
 
             row.iter_mut().enumerate().for_each(|(x, elem)| {
                 let x_t = T::from(x as u32);
                 let x_coord = centre.real + (x_t - half_x_res) * x_step;
-
                 let c = Complex::new(x_coord, y_coord);
+
                 *elem = mandelbrot(c, max_iter);
             });
         });
