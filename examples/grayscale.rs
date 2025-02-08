@@ -1,16 +1,18 @@
 use ndarray_images::Image;
 
-use mandybrot::{sample_area, Complex};
+use mandybrot::{sample_area, Complex, Fractal};
 
 const OUTPUT_DIR: &str = "output";
 const FILENAME: &str = "grayscale.png";
 
 fn main() {
+    let fractal = Fractal::Mandelbrot;
+
     let centre = Complex::new(-0.75, 0.0);
     let max_iter = 100;
     let scale = 3.0;
     let resolution = [2048, 2048];
-    let data = sample_area(centre, max_iter, scale, resolution);
+    let data = sample_area(centre, max_iter, scale, resolution, fractal);
 
     // Convert to normalised f32 values
     let data = data.mapv(|v| v as f32 / max_iter as f32);
