@@ -13,6 +13,8 @@ pub enum Fractal<T> {
     Newton { epsilon: T },
     Phoenix { c: Complex<T> },
     Clifford { a: T, b: T, c: T, d: T },
+    DeJong { a: T, b: T, c: T, d: T },
+    Tinkerbell { a: T, b: T, c: T, d: T },
     CelticMandelbrot,
     SineMandelbrot,
     CosineMandelbrot,
@@ -34,6 +36,8 @@ where
             Fractal::Newton { epsilon } => newton(p, *epsilon, max_iter),
             Fractal::Phoenix { c } => phoenix(p, *c, max_iter),
             Fractal::Clifford { a, b, c, d } => clifford(p, *a, *b, *c, *d, max_iter),
+            Fractal::DeJong { a, b, c, d } => de_jong(p, max_iter, *a, *b, *c, *d),
+            Fractal::Tinkerbell { a, b, c, d } => tinkerbell(p, max_iter, *a, *b, *c, *d),
             Fractal::CelticMandelbrot => celtic_mandelbrot(p, max_iter),
             Fractal::SineMandelbrot => sine_mandelbrot(p, max_iter),
             Fractal::CosineMandelbrot => cosine_mandelbrot(p, max_iter),
@@ -190,6 +194,46 @@ where
         n += 1;
     }
 
+    n
+}
+
+#[inline(always)]
+fn de_jong<T>(start: Complex<T>, max_iter: u32, a: T, b: T, c: T, d: T) -> u32
+where
+    T: Float + Add<Output = T> + Mul<Output = T> + Sub<Output = T>,
+{
+    let mut z = start;
+    let escape_radius = T::from(4.0).unwrap();
+    let mut n = 0;
+    while z.norm_sqr() < escape_radius && n < max_iter {
+        let x = z.real;
+        let y = z.imag;
+        // de Jong attractor equations
+        let new_x = (a * y).sin() - (b * x).cos();
+        let new_y = (c * x).sin() - (d * y).cos();
+        z = Complex::new(new_x, new_y);
+        n += 1;
+    }
+    n
+}
+
+#[inline(always)]
+fn tinkerbell<T>(start: Complex<T>, max_iter: u32, a: T, b: T, c: T, d: T) -> u32
+where
+    T: Float + Add<Output = T> + Mul<Output = T> + Sub<Output = T>,
+{
+    let mut z = start;
+    let escape_radius = T::from(4.0).unwrap();
+    let mut n = 0;
+    while z.norm_sqr() < escape_radius && n < max_iter {
+        let x = z.real;
+        let y = z.imag;
+        // Tinkerbell attractor equations
+        let new_x = x * x - y * y + a * x + b * y;
+        let new_y = T::from(2.0).unwrap() * x * y + c * x + d * y;
+        z = Complex::new(new_x, new_y);
+        n += 1;
+    }
     n
 }
 
