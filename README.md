@@ -1,2 +1,3 @@
-# mandybrot
-Functions for sampling the Mandelbrot function, and other fractals
+# Mandybrot
+
+Render fractals and attractors.
