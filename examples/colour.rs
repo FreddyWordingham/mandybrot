@@ -5,6 +5,9 @@ use palette::LinSrgb;
 
 use mandybrot::{sample_area, Complex};
 
+const OUTPUT_DIR: &str = "output";
+const FILENAME: &str = "colour.png";
+
 fn main() {
     let gradient = ConstEquidistantLinear::<f32, _, 3>::equidistant_unchecked([
         LinSrgb::new(0.00, 0.05, 0.20), // Dark blue
@@ -35,5 +38,6 @@ fn main() {
     let data: Array3<f32> = stack![Axis(2), red, green, blue];
 
     // Save the image
-    data.save("mandelbrot.png").unwrap();
+    let filename = format!("{}/{}", OUTPUT_DIR, FILENAME);
+    data.save(filename).unwrap();
 }
