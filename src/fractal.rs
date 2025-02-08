@@ -12,13 +12,7 @@ pub enum Fractal<T> {
     Multibrot { power: u32 },
     Newton { epsilon: T },
     Phoenix { c: Complex<T> },
-    Clifford { a: T, b: T, c: T, d: T },
-    DeJong { a: T, b: T, c: T, d: T },
-    Tinkerbell { a: T, b: T, c: T, d: T },
     CelticMandelbrot,
-    SineMandelbrot,
-    CosineMandelbrot,
-    ExponentialMandelbrot,
 }
 
 impl<T> Fractal<T>
@@ -35,13 +29,7 @@ where
             Fractal::Multibrot { power } => multibrot(p, *power, max_iter),
             Fractal::Newton { epsilon } => newton(p, *epsilon, max_iter),
             Fractal::Phoenix { c } => phoenix(p, *c, max_iter),
-            Fractal::Clifford { a, b, c, d } => clifford(p, *a, *b, *c, *d, max_iter),
-            Fractal::DeJong { a, b, c, d } => de_jong(p, max_iter, *a, *b, *c, *d),
-            Fractal::Tinkerbell { a, b, c, d } => tinkerbell(p, max_iter, *a, *b, *c, *d),
             Fractal::CelticMandelbrot => celtic_mandelbrot(p, max_iter),
-            Fractal::SineMandelbrot => sine_mandelbrot(p, max_iter),
-            Fractal::CosineMandelbrot => cosine_mandelbrot(p, max_iter),
-            Fractal::ExponentialMandelbrot => exponential_mandelbrot(p, max_iter),
         }
     }
 }
@@ -179,65 +167,6 @@ where
 }
 
 #[inline(always)]
-pub fn clifford<T>(p: Complex<T>, a: T, b: T, c: T, d: T, max_iter: u32) -> u32
-where
-    T: Float + Add<Output = T> + Mul<Output = T> + Sub<Output = T>,
-{
-    let mut z = p;
-    let mut n = 0;
-
-    while z.norm_sqr() < T::from(4.0).unwrap() && n < max_iter {
-        z = Complex::new(
-            (a * z.imag).sin() + c * (a * z.real).cos(),
-            (b * z.real).sin() + d * (b * z.imag).cos(),
-        );
-        n += 1;
-    }
-
-    n
-}
-
-#[inline(always)]
-fn de_jong<T>(start: Complex<T>, max_iter: u32, a: T, b: T, c: T, d: T) -> u32
-where
-    T: Float + Add<Output = T> + Mul<Output = T> + Sub<Output = T>,
-{
-    let mut z = start;
-    let escape_radius = T::from(4.0).unwrap();
-    let mut n = 0;
-    while z.norm_sqr() < escape_radius && n < max_iter {
-        let x = z.real;
-        let y = z.imag;
-        // de Jong attractor equations
-        let new_x = (a * y).sin() - (b * x).cos();
-        let new_y = (c * x).sin() - (d * y).cos();
-        z = Complex::new(new_x, new_y);
-        n += 1;
-    }
-    n
-}
-
-#[inline(always)]
-fn tinkerbell<T>(start: Complex<T>, max_iter: u32, a: T, b: T, c: T, d: T) -> u32
-where
-    T: Float + Add<Output = T> + Mul<Output = T> + Sub<Output = T>,
-{
-    let mut z = start;
-    let escape_radius = T::from(4.0).unwrap();
-    let mut n = 0;
-    while z.norm_sqr() < escape_radius && n < max_iter {
-        let x = z.real;
-        let y = z.imag;
-        // Tinkerbell attractor equations
-        let new_x = x * x - y * y + a * x + b * y;
-        let new_y = T::from(2.0).unwrap() * x * y + c * x + d * y;
-        z = Complex::new(new_x, new_y);
-        n += 1;
-    }
-    n
-}
-
-#[inline(always)]
 fn celtic_mandelbrot<T>(c: Complex<T>, max_iter: u32) -> u32
 where
     T: Float + Add<Output = T> + Mul<Output = T> + Sub<Output = T>,
@@ -252,64 +181,6 @@ where
             (z.real * z.real - z.imag * z.imag).abs(),
             T::from(2.0).unwrap() * z.real * z.imag,
         ) + c;
-        n += 1;
-    }
-    n
-}
-
-#[inline(always)]
-fn sine_mandelbrot<T>(c: Complex<T>, max_iter: u32) -> u32
-where
-    T: Float + Add<Output = T> + Mul<Output = T> + Sub<Output = T>,
-{
-    let zero = T::zero();
-    let four = T::from(4.0).unwrap();
-    let mut z = Complex::new(zero, zero);
-    let mut n = 0;
-    while z.norm_sqr() < four && n < max_iter {
-        // sin(z) = sin(re)*cosh(im) + i*cos(re)*sinh(im)
-        let new_re = z.real.sin() * z.imag.cosh();
-        let new_im = z.real.cos() * z.imag.sinh();
-        z = Complex::new(new_re, new_im) + c;
-        n += 1;
-    }
-    n
-}
-
-#[inline(always)]
-fn cosine_mandelbrot<T>(c: Complex<T>, max_iter: u32) -> u32
-where
-    T: Float + Add<Output = T> + Mul<Output = T> + Sub<Output = T>,
-{
-    let zero = T::zero();
-    let four = T::from(4.0).unwrap();
-    let mut z = Complex::new(zero, zero);
-    let mut n = 0;
-    while z.norm_sqr() < four && n < max_iter {
-        // cos(z) = cos(re)*cosh(im) - i*sin(re)*sinh(im)
-        let new_re = z.real.cos() * z.imag.cosh();
-        let new_im = -(z.real.sin() * z.imag.sinh());
-        z = Complex::new(new_re, new_im) + c;
-        n += 1;
-    }
-    n
-}
-
-#[inline(always)]
-fn exponential_mandelbrot<T>(c: Complex<T>, max_iter: u32) -> u32
-where
-    T: Float + Add<Output = T> + Mul<Output = T> + Sub<Output = T>,
-{
-    let zero = T::zero();
-    let four = T::from(4.0).unwrap();
-    let mut z = Complex::new(zero, zero);
-    let mut n = 0;
-    while z.norm_sqr() < four && n < max_iter {
-        // exp(z) = exp(re) * (cos(im) + i*sin(im))
-        let exp_re = z.real.exp();
-        let new_re = exp_re * z.imag.cos();
-        let new_im = exp_re * z.imag.sin();
-        z = Complex::new(new_re, new_im) + c;
         n += 1;
     }
     n

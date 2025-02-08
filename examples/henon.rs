@@ -6,18 +6,12 @@ use palette::{LinSrgb, Srgb};
 use mandybrot::{render_attractor, Attractor, Complex};
 
 const OUTPUT_DIR: &str = "output";
-const FILENAME: &str = "tinkerbell.png";
+const FILENAME: &str = "henon.png";
 
-const ATTRACTOR: Attractor<f64> = Attractor::Tinkerbell {
-    a: 0.9,
-    b: -0.6013,
-    c: 2.0,
-    d: 0.5,
-};
-const START: Complex<f64> = Complex::new(-0.72, -0.64);
+const ATTRACTOR: Attractor<f64> = Attractor::Henon { a: 1.4, b: 0.3 };
 
-const CENTRE: Complex<f64> = Complex::new(-0.25, -0.5);
-const MAX_ITER: u32 = 100000000;
+const CENTRE: Complex<f64> = Complex::new(0.0, 0.0);
+const MAX_ITER: u32 = 100000;
 const SCALE: f64 = 3.0;
 const RESOLUTION: [u32; 2] = [1024, 1024];
 const COLOURS: [&str; 8] = [
@@ -33,7 +27,7 @@ const COLOURS: [&str; 8] = [
 
 fn main() {
     // Generate Mandelbrot data
-    let data = render_attractor(START, CENTRE, MAX_ITER, SCALE, RESOLUTION, ATTRACTOR);
+    let data = render_attractor(CENTRE, MAX_ITER, SCALE, RESOLUTION, ATTRACTOR);
 
     // Convert iteration counts to normalised values (0.0 - 1.0)
     let min = *data.iter().min().unwrap() as f64;

@@ -6,19 +6,18 @@ use palette::{LinSrgb, Srgb};
 use mandybrot::{render_attractor, Attractor, Complex};
 
 const OUTPUT_DIR: &str = "output";
-const FILENAME: &str = "tinkerbell.png";
+const FILENAME: &str = "clifford_attractor.png";
 
-const ATTRACTOR: Attractor<f64> = Attractor::Tinkerbell {
-    a: 0.9,
-    b: -0.6013,
-    c: 2.0,
-    d: 0.5,
+const ATTRACTOR: Attractor<f64> = Attractor::Clifford {
+    a: -1.4,
+    b: 1.6,
+    c: 1.0,
+    d: -0.7,
 };
-const START: Complex<f64> = Complex::new(-0.72, -0.64);
 
-const CENTRE: Complex<f64> = Complex::new(-0.25, -0.5);
-const MAX_ITER: u32 = 100000000;
-const SCALE: f64 = 3.0;
+const CENTRE: Complex<f64> = Complex::new(0.0, 0.0);
+const MAX_ITER: u32 = 10000000;
+const SCALE: f64 = 5.0;
 const RESOLUTION: [u32; 2] = [1024, 1024];
 const COLOURS: [&str; 8] = [
     "#FDDC97", // Gentle yellow
@@ -33,7 +32,7 @@ const COLOURS: [&str; 8] = [
 
 fn main() {
     // Generate Mandelbrot data
-    let data = render_attractor(START, CENTRE, MAX_ITER, SCALE, RESOLUTION, ATTRACTOR);
+    let data = render_attractor(CENTRE, MAX_ITER, SCALE, RESOLUTION, ATTRACTOR);
 
     // Convert iteration counts to normalised values (0.0 - 1.0)
     let min = *data.iter().min().unwrap() as f64;
@@ -42,7 +41,7 @@ fn main() {
     let data = data.mapv(|v| (v as f64 - min) / range);
 
     // Apply gamma correction
-    let data = data.mapv(|v| v.powf(0.25));
+    let data = data.mapv(|v| v.powf(0.2));
 
     // Apply the gradient to convert greyscale values to RGB
     let gradient = create_gradient(COLOURS);

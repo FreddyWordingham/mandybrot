@@ -6,19 +6,13 @@ use palette::{LinSrgb, Srgb};
 use mandybrot::{render_attractor, Attractor, Complex};
 
 const OUTPUT_DIR: &str = "output";
-const FILENAME: &str = "tinkerbell.png";
+const FILENAME: &str = "ikdea.png";
 
-const ATTRACTOR: Attractor<f64> = Attractor::Tinkerbell {
-    a: 0.9,
-    b: -0.6013,
-    c: 2.0,
-    d: 0.5,
-};
-const START: Complex<f64> = Complex::new(-0.72, -0.64);
+const ATTRACTOR: Attractor<f64> = Attractor::Ikeda { u: 0.918 };
 
-const CENTRE: Complex<f64> = Complex::new(-0.25, -0.5);
-const MAX_ITER: u32 = 100000000;
-const SCALE: f64 = 3.0;
+const CENTRE: Complex<f64> = Complex::new(3.0, 2.0);
+const MAX_ITER: u32 = 1000;
+const SCALE: f64 = 10.0;
 const RESOLUTION: [u32; 2] = [1024, 1024];
 const COLOURS: [&str; 8] = [
     "#FDDC97", // Gentle yellow
@@ -33,7 +27,17 @@ const COLOURS: [&str; 8] = [
 
 fn main() {
     // Generate Mandelbrot data
-    let data = render_attractor(START, CENTRE, MAX_ITER, SCALE, RESOLUTION, ATTRACTOR);
+    let mut data = render_attractor(CENTRE, CENTRE, MAX_ITER, SCALE, RESOLUTION, ATTRACTOR);
+
+    let n = 40;
+    for xi in -n..n {
+        for yi in -n..n {
+            let x = xi as f64 / n as f64;
+            let y = yi as f64 / n as f64;
+            let start = Complex::new(x, y);
+            data += &render_attractor(start, CENTRE, MAX_ITER, SCALE, RESOLUTION, ATTRACTOR);
+        }
+    }
 
     // Convert iteration counts to normalised values (0.0 - 1.0)
     let min = *data.iter().min().unwrap() as f64;

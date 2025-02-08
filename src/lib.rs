@@ -1,7 +1,9 @@
+mod attractor;
 mod complex;
 mod fractal;
-mod sample;
+mod render;
 
+pub use attractor::Attractor;
 pub use complex::Complex;
 pub use fractal::Fractal;
-pub use sample::{multisample_area, sample_area};
+pub use render::{render_attractor, render_fractal, render_fractal_antialiasing};

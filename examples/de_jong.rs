@@ -1,14 +1,14 @@
 use enterpolation::{linear::ConstEquidistantLinear, Generator};
 use ndarray::{stack, Array2, Array3, Axis};
 use ndarray_images::Image;
-use palette::LinSrgb;
+use palette::{LinSrgb, Srgb};
 
-use mandybrot::{multisample_area, Complex, Fractal};
+use mandybrot::{render_attractor, Attractor, Complex};
 
 const OUTPUT_DIR: &str = "output";
-const FILENAME: &str = "de_jong.png";
+const FILENAME: &str = "de_jong_attractor.png";
 
-const FRACTAL: Fractal<f64> = Fractal::DeJong {
+const ATTRACTOR: Attractor<f64> = Attractor::DeJong {
     a: 1.4,
     b: -2.3,
     c: -2.4,
@@ -16,24 +16,35 @@ const FRACTAL: Fractal<f64> = Fractal::DeJong {
 };
 
 const CENTRE: Complex<f64> = Complex::new(0.0, 0.0);
-const MAX_ITER: u32 = 100;
+const MAX_ITER: u32 = 10000000;
 const SCALE: f64 = 5.0;
 const RESOLUTION: [u32; 2] = [1024, 1024];
-const SAMPLES: u32 = 4;
+const COLOURS: [&str; 8] = [
+    "#FDDC97", // Gentle yellow
+    "#FCA07E", // Soft orange
+    "#F76C40", // Vibrant orange
+    "#E44E3F", // Red-orange
+    "#BA256A", // Magenta
+    "#8A197F", // Warm purple
+    "#5B0E78", // Rich purple
+    "#2C003E", // Deep purple
+];
 
 fn main() {
     // Generate Mandelbrot data
-    let data = multisample_area(CENTRE, MAX_ITER, SCALE, RESOLUTION, FRACTAL, SAMPLES);
+    let data = render_attractor(CENTRE, MAX_ITER, SCALE, RESOLUTION, ATTRACTOR);
 
     // Convert iteration counts to normalised values (0.0 - 1.0)
-    let data = data.mapv(|v| v as f64 / MAX_ITER as f64);
+    let min = *data.iter().min().unwrap() as f64;
+    let max = *data.iter().max().unwrap() as f64;
+    let range = (max - min) as f64;
+    let data = data.mapv(|v| (v as f64 - min) / range);
+
+    // Apply gamma correction
+    let data = data.mapv(|v| v.powf(0.2));
 
     // Apply the gradient to convert greyscale values to RGB
-    let gradient = ConstEquidistantLinear::<f64, _, 3>::equidistant_unchecked([
-        LinSrgb::new(0.00, 0.05, 0.20), // Dark blue
-        LinSrgb::new(0.70, 0.10, 0.20), // Red tone
-        LinSrgb::new(0.95, 0.90, 0.30), // Yellow tone
-    ]);
+    let gradient = create_gradient(COLOURS);
     let coloured_data = data.mapv(|v| gradient.gen(v));
 
     // Convert from `Array2<LinSrgb<f64>>` to `Array3<f64>`
@@ -47,4 +58,19 @@ fn main() {
     // Save the image
     let filename = format!("{}/{}", OUTPUT_DIR, FILENAME);
     data.save(filename).unwrap();
+}
+
+fn hex_to_lin_srgb(hex: &str) -> LinSrgb<f64> {
+    let hex = hex.trim_start_matches('#');
+    let r = u8::from_str_radix(&hex[0..2], 16).expect("Invalid hex code");
+    let g = u8::from_str_radix(&hex[2..4], 16).expect("Invalid hex code");
+    let b = u8::from_str_radix(&hex[4..6], 16).expect("Invalid hex code");
+    Srgb::new(r as f64 / 255.0, g as f64 / 255.0, b as f64 / 255.0).into_linear()
+}
+
+fn create_gradient<const N: usize>(
+    hexes: [&str; N],
+) -> ConstEquidistantLinear<f64, LinSrgb<f64>, N> {
+    let colors = hexes.map(hex_to_lin_srgb);
+    ConstEquidistantLinear::equidistant_unchecked(colors)
 }
