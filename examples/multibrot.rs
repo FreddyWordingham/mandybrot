@@ -3,21 +3,22 @@ use ndarray::{stack, Array2, Array3, Axis};
 use ndarray_images::Image;
 use palette::LinSrgb;
 
-use mandybrot::{sample_area, Complex, Fractal};
+use mandybrot::{multisample_area, Complex, Fractal};
 
 const OUTPUT_DIR: &str = "output";
-const FILENAME: &str = "colour.png";
+const FILENAME: &str = "multibrot.png";
 
-const FRACTAL: Fractal<f64> = Fractal::Mandelbrot;
+const FRACTAL: Fractal<f64> = Fractal::Multibrot { power: 6 };
 
-const CENTRE: Complex<f64> = Complex::new(-0.75, 0.0);
+const CENTRE: Complex<f64> = Complex::new(0.0, 0.0);
 const MAX_ITER: u32 = 100;
-const SCALE: f64 = 3.0;
-const RESOLUTION: [u32; 2] = [2048, 2048];
+const SCALE: f64 = 2.5;
+const RESOLUTION: [u32; 2] = [1024, 1024];
+const SAMPLES: u32 = 4;
 
 fn main() {
     // Generate Mandelbrot data
-    let data = sample_area(CENTRE, MAX_ITER, SCALE, RESOLUTION, FRACTAL);
+    let data = multisample_area(CENTRE, MAX_ITER, SCALE, RESOLUTION, FRACTAL, SAMPLES);
 
     // Convert iteration counts to normalised values (0.0 - 1.0)
     let data = data.mapv(|v| v as f64 / MAX_ITER as f64);

@@ -13,6 +13,7 @@ pub enum Fractal<T> {
     Newton { epsilon: T },
     Phoenix { c: Complex<T> },
     Clifford { a: T, b: T, c: T, d: T },
+    CelticMandelbrot,
 }
 
 impl<T> Fractal<T>
@@ -30,6 +31,7 @@ where
             Fractal::Newton { epsilon } => newton(p, *epsilon, max_iter),
             Fractal::Phoenix { c } => phoenix(p, *c, max_iter),
             Fractal::Clifford { a, b, c, d } => clifford(p, *a, *b, *c, *d, max_iter),
+            Fractal::CelticMandelbrot => celtic_mandelbrot(p, max_iter),
         }
     }
 }
@@ -167,20 +169,40 @@ where
 }
 
 #[inline(always)]
-pub fn clifford<T>(c: Complex<T>, a: T, b: T, d: T, e: T, max_iter: u32) -> u32
+pub fn clifford<T>(p: Complex<T>, a: T, b: T, c: T, d: T, max_iter: u32) -> u32
 where
     T: Float + Add<Output = T> + Mul<Output = T> + Sub<Output = T>,
 {
-    let mut z = c;
+    let mut z = p;
     let mut n = 0;
 
     while z.norm_sqr() < T::from(4.0).unwrap() && n < max_iter {
         z = Complex::new(
-            (a * z.imag).sin() + d * (a * z.real).cos(),
-            (b * z.real).sin() + e * (b * z.imag).cos(),
+            (a * z.imag).sin() + c * (a * z.real).cos(),
+            (b * z.real).sin() + d * (b * z.imag).cos(),
         );
         n += 1;
     }
 
+    n
+}
+
+#[inline(always)]
+fn celtic_mandelbrot<T>(c: Complex<T>, max_iter: u32) -> u32
+where
+    T: Float + Add<Output = T> + Mul<Output = T> + Sub<Output = T>,
+{
+    let zero = T::zero();
+    let four = T::from(4.0).unwrap();
+    let mut z = Complex::new(zero, zero);
+    let mut n = 0;
+    while z.norm_sqr() < four && n < max_iter {
+        // Absolute value applied to the real part difference
+        z = Complex::new(
+            (z.real * z.real - z.imag * z.imag).abs(),
+            T::from(2.0).unwrap() * z.real * z.imag,
+        ) + c;
+        n += 1;
+    }
     n
 }

@@ -10,11 +10,11 @@ const FILENAME: &str = "burning_ship.png";
 
 const FRACTAL: Fractal<f64> = Fractal::BurningShip;
 
-const CENTRE: Complex<f64> = Complex::new(-0.75, -1.0);
+const CENTRE: Complex<f64> = Complex::new(-0.3, 0.0);
 const MAX_ITER: u32 = 100;
-const SCALE: f64 = 3.0e-1;
-const RESOLUTION: [u32; 2] = [512, 512];
-const SAMPLES: u32 = 16;
+const SCALE: f64 = 3.0;
+const RESOLUTION: [u32; 2] = [1024, 1024];
+const SAMPLES: u32 = 4;
 
 fn main() {
     // Generate Mandelbrot data
