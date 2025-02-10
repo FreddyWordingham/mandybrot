@@ -1,27 +1,29 @@
-centre:
-  real: 0.0
-  imag: 0.0
+centre: [0.0, 0.0]
 scale: 5.0
-resolution: [1024, 1024]
+resolution: [512, 512]
+
+start: [0.0, 0.0]
+radius: 1.0
+num_samples: 10000
+max_iter: 1000
+draw_after: 10
 
 attractor: !Clifford
-  a: -1.4
-  b: 1.6
-  c: 1.0
-  d: 0.7
-start:
-  real: 0.0
-  imag: 0.0
-max_iter: 10000000
+  a: 1.7
+  b: 1.7
+  c: 0.6
+  d: 1.2
 
 image_name: "clifford.png"
-gamma: 0.25
+log: False
+gamma: 0.2
 colours:
-  - "#FDDC97"
-  - "#FCA07E"
-  - "#F76C40"
-  - "#E44E3F"
-  - "#BA256A"
-  - "#8A197F"
-  - "#5B0E78"
-  - "#2C003E"
+  - "#00007F"
+  - "#0000FF"
+  - "#007FFF"
+  - "#00FFFF"
+  - "#7FFF7F"
+  - "#FFFF00"
+  - "#FF7F00"
+  - "#FF0000"
+  - "#7F0000"

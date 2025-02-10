@@ -1,7 +1,11 @@
 use enterpolation::{linear::Linear, Generator};
-use ndarray::Array3;
+use ndarray::parallel::prelude::IntoParallelRefIterator;
+use ndarray::parallel::prelude::ParallelIterator;
+use ndarray::{Array2, Array3};
 use ndarray_images::Image;
+use num_traits::float::FloatConst;
 use palette::{LinSrgb, Srgb};
+use rand::Rng;
 use serde::{Deserialize, Serialize};
 
 use mandybrot::{render_attractor, Attractor, Complex};
@@ -13,17 +17,41 @@ const OUTPUT_DIR: &str = "output";
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Parameters<T> {
-    pub centre: Complex<T>,
+    pub centre: [T; 2],
     pub scale: T,
     pub resolution: [u32; 2],
 
-    pub start: Complex<T>,
+    pub start: [T; 2],
+    pub radius: T,
+    pub num_samples: u32,
     pub max_iter: u32,
-    pub attractor: Attractor<T>,
-    pub gamma: T,
+    pub draw_after: u32,
 
-    pub colours: Vec<String>,
+    pub attractor: Attractor<T>,
+
     pub image_name: String,
+    pub log: bool,
+    pub gamma: T,
+    pub colours: Vec<String>,
+}
+
+fn generate_initial_positions(
+    start: [Precision; 2],
+    radius: Precision,
+    num_samples: u32,
+) -> Vec<Complex<Precision>> {
+    let mut rng = rand::rng();
+    let mut positions = Vec::with_capacity(num_samples as usize);
+    for _ in 0..num_samples {
+        let theta = rng.random_range(0.0..Precision::TAU());
+        let rho = rng.random_range(0.0..radius).sqrt();
+
+        let x = start[0] + rho * theta.cos();
+        let y = start[1] + rho * theta.sin();
+
+        positions.push(Complex::new(x as Precision, y as Precision));
+    }
+    positions
 }
 
 fn main() {
@@ -31,23 +59,36 @@ fn main() {
     let params = read_input_args();
 
     // Render the attractor
-    let data = render_attractor(
-        params.start,
-        params.centre,
-        params.max_iter,
-        params.scale,
-        params.resolution,
-        &params.attractor,
-    );
+    let initial_positions =
+        generate_initial_positions(params.start, params.radius, params.num_samples);
 
-    // Convert iteration counts to normalised values (0.0 - 1.0)
-    let min = *data.iter().min().unwrap() as Precision;
+    // Render and sum attractors concurrently.
+    let shape = (params.resolution[1] as usize, params.resolution[0] as usize);
+    let data: Array2<u32> = initial_positions
+        .par_iter()
+        .map(|&pos| {
+            render_attractor(
+                pos,
+                Complex::new(params.centre[0], params.centre[1]),
+                params.max_iter,
+                params.draw_after,
+                params.scale,
+                params.resolution,
+                &params.attractor,
+            )
+        })
+        .reduce(|| Array2::zeros(shape), |a, b| a + b);
+
+    // Normalise the data
     let max = *data.iter().max().unwrap() as Precision;
-    let range = (max - min) as Precision;
-    let data = data.mapv(|v| (v as Precision - min) / range);
+    let data = if params.log {
+        data.mapv(|v| (v as Precision).ln().max(0.0) / (max as Precision).ln())
+    } else {
+        data.mapv(|v| v as Precision / max as Precision)
+    };
 
     // Apply gamma correction
-    let data = data.mapv(|v| v.powf(params.gamma as Precision));
+    let data = data.mapv(|v| v.powf(params.gamma));
 
     // Create a colour map
     let cmap = build_colour_map(&params.colours);

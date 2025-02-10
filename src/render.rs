@@ -112,6 +112,7 @@ pub fn render_attractor<T>(
     start: Complex<T>,
     centre: Complex<T>,
     max_iter: u32,
+    draw_after: u32,
     scale: T,
     resolution: [u32; 2],
     attractor: &Attractor<T>,
@@ -134,8 +135,12 @@ where
     let pixel_mapper = create_position_to_pixel_mapper(centre, scale, resolution);
 
     let mut pos = start;
-    for _ in 0..max_iter {
+    for n in 0..max_iter {
         pos = attractor.iterate(pos);
+
+        if n < draw_after {
+            continue;
+        }
         if let Some([x, y]) = pixel_mapper(&pos) {
             pixels[[y, x]] += 1;
         }

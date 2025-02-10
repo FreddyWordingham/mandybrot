@@ -19,8 +19,9 @@ pub struct Parameters<T> {
 
     pub num_samples: u32,
     pub max_iter: u32,
-    pub attractor: Attractor<T>,
     pub gamma: T,
+
+    pub attractor: Attractor<T>,
 
     pub colours: Vec<String>,
     pub image_name: String,

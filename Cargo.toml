@@ -6,12 +6,12 @@ edition = "2021"
 [dependencies]
 ndarray = { version = "0.16.1", features = ["rayon"] }
 num-traits = "0.2.19"
+rand = "0.9.0"
 rayon = "1.10.0"
 serde = { version = "1.0.217", features = ["derive"] }
-serde_yaml = "0.9.34"
 
 [dev-dependencies]
 enterpolation = "0.2.1"
 ndarray_images = "0.1.0"
 palette = "0.7.6"
-rand = "0.9.0"
+serde_yaml = "0.9.34"
