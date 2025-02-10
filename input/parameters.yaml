@@ -1,0 +1,24 @@
+start:
+  real: 0.0
+  imag: 0.0
+centre:
+  real: 0.0
+  imag: 0.0
+max_iter: 1000000
+scale: 5.0
+resolution: [1024, 1024]
+colours:
+  - "#FDDC97"
+  - "#FCA07E"
+  - "#F76C40"
+  - "#E44E3F"
+  - "#BA256A"
+  - "#8A197F"
+  - "#5B0E78"
+  - "#2C003E"
+attractor: !Clifford
+  a: -1.4
+  b: 1.6
+  c: 1.0
+  d: -0.7
+gamma: 0.25
