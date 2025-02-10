@@ -1,9 +1,11 @@
 use num_traits::{Float, NumCast, One};
+use serde::{Deserialize, Serialize};
 use std::ops::{Add, Mul, Sub};
 
 use crate::Complex;
 
 /// Enum representing different attractors that can be iterated.
+#[derive(Debug, Serialize, Deserialize)]
 pub enum Attractor<T> {
     Clifford { a: T, b: T, c: T, d: T },
     DeJong { a: T, b: T, c: T, d: T },

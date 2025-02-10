@@ -1,7 +1,8 @@
 use num_traits::Float;
+use serde::{Deserialize, Serialize};
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Complex<T> {
     pub real: T,
     pub imag: T,

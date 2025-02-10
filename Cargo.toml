@@ -7,6 +7,8 @@ edition = "2021"
 ndarray = { version = "0.16.1", features = ["rayon"] }
 num-traits = "0.2.19"
 rayon = "1.10.0"
+serde = { version = "1.0.217", features = ["derive"] }
+serde_yaml = "0.9.34"
 
 [dev-dependencies]
 enterpolation = "0.2.1"
