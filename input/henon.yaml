@@ -1,12 +1,19 @@
-start:
-  real: 0.0
-  imag: 0.0
 centre:
   real: 0.0
   imag: 0.0
-max_iter: 1000000
-scale: 5.0
+scale: 3.0
 resolution: [1024, 1024]
+
+attractor: !Henon
+  a: 1.4
+  b: 0.3
+start:
+  real: 0.0
+  imag: 0.0
+max_iter: 10000000
+
+image_name: "henon.png"
+gamma: 0.3
 colours:
   - "#FDDC97"
   - "#FCA07E"
@@ -16,9 +23,3 @@ colours:
   - "#8A197F"
   - "#5B0E78"
   - "#2C003E"
-attractor: !Clifford
-  a: -1.4
-  b: 1.6
-  c: 1.0
-  d: -0.7
-gamma: 0.25

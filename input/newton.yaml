@@ -1,0 +1,22 @@
+centre:
+  real: 0.0
+  imag: 0.0
+
+scale: 2.0
+resolution: [1024, 1024]
+
+fractal: !Newton
+  epsilon: 0.0001
+max_iter: 100
+super_samples: 2
+
+image_name: "newton.png"
+gamma: 0.5
+colours:
+  - "#FF0000"
+  - "#FFA500"
+  - "#FFFF00"
+  - "#008000"
+  - "#0000FF"
+  - "#4B0082"
+  - "#000000"

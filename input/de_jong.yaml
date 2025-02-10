@@ -1,0 +1,27 @@
+centre:
+  real: -1.0
+  imag: 0.5
+scale: 4.0
+resolution: [1024, 1024]
+
+attractor: !DeJong
+  a: -2.7
+  b: -0.09
+  c: -0.86
+  d: -2.2
+start:
+  real: 0.0
+  imag: 0.0
+max_iter: 10000000
+
+image_name: "de_jong.png"
+gamma: 0.3
+colours:
+  - "#FDDC97"
+  - "#FCA07E"
+  - "#F76C40"
+  - "#E44E3F"
+  - "#BA256A"
+  - "#8A197F"
+  - "#5B0E78"
+  - "#2C003E"

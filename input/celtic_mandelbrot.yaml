@@ -1,0 +1,17 @@
+centre:
+  real: -0.7
+  imag: 0.0
+
+scale: 5.0
+resolution: [1024, 1024]
+
+fractal: !CelticMandelbrot
+max_iter: 50
+super_samples: 2
+
+image_name: "celtic_mandelbrot.png"
+gamma: 1.0
+colours:
+  - "#003F7B"
+  - "#DA597B"
+  - "#FAF495"

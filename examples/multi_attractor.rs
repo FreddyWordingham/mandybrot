@@ -1,5 +1,5 @@
 use enterpolation::{linear::Linear, Generator};
-use ndarray::Array3;
+use ndarray::{Array2, Array3};
 use ndarray_images::Image;
 use palette::{LinSrgb, Srgb};
 use serde::{Deserialize, Serialize};
@@ -17,7 +17,7 @@ pub struct Parameters<T> {
     pub scale: T,
     pub resolution: [u32; 2],
 
-    pub start: Complex<T>,
+    pub num_samples: u32,
     pub max_iter: u32,
     pub attractor: Attractor<T>,
     pub gamma: T,
@@ -31,14 +31,22 @@ fn main() {
     let params = read_input_args();
 
     // Render the attractor
-    let data = render_attractor(
-        params.start,
-        params.centre,
-        params.max_iter,
-        params.scale,
-        params.resolution,
-        &params.attractor,
-    );
+    let mut data =
+        Array2::<u32>::zeros([params.resolution[0] as usize, params.resolution[1] as usize]);
+    for _ in 0..params.num_samples {
+        let theta = rand::random::<Precision>() * std::f32::consts::PI * 2.0;
+        let rho = rand::random::<Precision>().sqrt();
+
+        let start = Complex::new(rho * theta.cos(), rho * theta.sin());
+        data += &render_attractor(
+            start,
+            params.centre,
+            params.max_iter,
+            params.scale,
+            params.resolution,
+            &params.attractor,
+        );
+    }
 
     // Convert iteration counts to normalised values (0.0 - 1.0)
     let min = *data.iter().min().unwrap() as Precision;

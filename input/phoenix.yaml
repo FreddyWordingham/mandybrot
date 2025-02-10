@@ -1,0 +1,20 @@
+centre:
+  real: 0.0
+  imag: 0.0
+
+scale: 4.0
+resolution: [1024, 1024]
+
+fractal: !Phoenix
+  c:
+    real: -0.2
+    imag: 1.0
+max_iter: 200
+super_samples: 2
+
+image_name: "phoenix.png"
+gamma: 0.5
+colours:
+  - "#003F7B"
+  - "#DA597B"
+  - "#FAF495"

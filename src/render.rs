@@ -5,61 +5,8 @@ use std::ops::{Add, Div, Mul, Sub};
 
 use crate::{Attractor, Complex, Fractal};
 
-/// Renders a fractal using single-sample per pixel.
-pub fn render_fractal<T>(
-    centre: Complex<T>,
-    max_iter: u32,
-    scale: T,
-    resolution: [u32; 2],
-    fractal: Fractal<T>,
-) -> Array2<u32>
-where
-    T: Copy
-        + Add<Output = T>
-        + Sub<Output = T>
-        + Mul<Output = T>
-        + Div<Output = T>
-        + PartialOrd
-        + NumCast
-        + Float
-        + Send
-        + Sync,
-{
-    let [x_res, y_res] = resolution;
-    let x_res_t = T::from(x_res).unwrap();
-    let y_res_t = T::from(y_res).unwrap();
-    let aspect_ratio = x_res_t / y_res_t;
-    let width = scale * aspect_ratio;
-    let height = scale;
-    let half_x_res = x_res_t / T::from(2).unwrap();
-    let half_y_res = y_res_t / T::from(2).unwrap();
-    let x_step = width / x_res_t;
-    let y_step = height / y_res_t;
-
-    let mut pixels = Array2::<u32>::zeros((y_res as usize, x_res as usize));
-
-    pixels
-        .as_slice_mut()
-        .unwrap()
-        .par_chunks_mut(x_res as usize)
-        .enumerate()
-        .for_each(|(y, row)| {
-            let y_t = T::from(y as u32).unwrap();
-            let y_offset = (y_t - half_y_res) * y_step;
-            let y_coord = centre.imag + y_offset;
-            row.iter_mut().enumerate().for_each(|(x, pixel)| {
-                let x_t = T::from(x as u32).unwrap();
-                let x_coord = centre.real + (x_t - half_x_res) * x_step;
-                let c = Complex::new(x_coord, y_coord);
-                *pixel = fractal.sample(c, max_iter);
-            });
-        });
-
-    pixels
-}
-
 /// Renders a fractal with anti-aliasing by sampling multiple points per pixel.
-pub fn render_fractal_antialiasing<T>(
+pub fn render_fractal<T>(
     centre: Complex<T>,
     max_iter: u32,
     scale: T,
@@ -167,7 +114,7 @@ pub fn render_attractor<T>(
     max_iter: u32,
     scale: T,
     resolution: [u32; 2],
-    attractor: Attractor<T>,
+    attractor: &Attractor<T>,
 ) -> Array2<u32>
 where
     T: Copy

@@ -1,0 +1,27 @@
+centre:
+  real: -0.3
+  imag: -0.4
+scale: 2.5
+resolution: [1024, 1024]
+
+attractor: !Tinkerbell
+  a: 0.9
+  b: -0.6013
+  c: 2.0
+  d: 0.5
+start:
+  real: -0.72
+  imag: -0.64
+max_iter: 100000
+
+image_name: "tinkerbell.png"
+gamma: 0.5
+colours:
+  - "#FDDC97"
+  - "#FCA07E"
+  - "#F76C40"
+  - "#E44E3F"
+  - "#BA256A"
+  - "#8A197F"
+  - "#5B0E78"
+  - "#2C003E"

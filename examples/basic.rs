@@ -1,4 +1,4 @@
-use mandybrot::{sample_area, Complex, Fractal};
+use mandybrot::{render_fractal, Complex, Fractal};
 
 fn main() {
     let fractal = Fractal::Mandelbrot;
@@ -6,8 +6,9 @@ fn main() {
     let centre = Complex::new(-0.75, 0.0);
     let max_iter = 100;
     let scale = 3.0;
-    let resolution = [20, 20];
-    let data = sample_area(centre, max_iter, scale, resolution, fractal);
+    let resolution = [21, 21];
+    let super_samples = 1;
+    let data = render_fractal(centre, max_iter, scale, resolution, fractal, super_samples);
 
     let rows = data.shape()[0];
     for y in 0..rows {

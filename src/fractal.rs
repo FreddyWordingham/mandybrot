@@ -1,9 +1,11 @@
 use num_traits::{Float, NumCast};
+use serde::{Deserialize, Serialize};
 use std::ops::{Add, Mul, Sub};
 
 use crate::Complex;
 
 /// Enum representing different fractals that can be sampled.
+#[derive(Debug, Serialize, Deserialize)]
 pub enum Fractal<T> {
     Mandelbrot,
     BurningShip,

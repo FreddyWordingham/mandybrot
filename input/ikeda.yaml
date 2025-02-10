@@ -1,0 +1,22 @@
+centre:
+  real: 3.0
+  imag: 2.0
+scale: 10.0
+resolution: [1024, 1024]
+
+attractor: !Ikeda
+  u: 0.918
+num_samples: 10000
+max_iter: 1000
+
+image_name: "ikdea.png"
+gamma: 0.1
+colours:
+  - "#FDDC97"
+  - "#FCA07E"
+  - "#F76C40"
+  - "#E44E3F"
+  - "#BA256A"
+  - "#8A197F"
+  - "#5B0E78"
+  - "#2C003E"

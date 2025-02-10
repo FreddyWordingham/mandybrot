@@ -4,7 +4,7 @@ use ndarray_images::Image;
 use palette::{LinSrgb, Srgb};
 use serde::{Deserialize, Serialize};
 
-use mandybrot::{render_attractor, Attractor, Complex};
+use mandybrot::{render_fractal, Complex, Fractal};
 
 type Precision = f32;
 
@@ -17,9 +17,9 @@ pub struct Parameters<T> {
     pub scale: T,
     pub resolution: [u32; 2],
 
-    pub start: Complex<T>,
     pub max_iter: u32,
-    pub attractor: Attractor<T>,
+    pub super_samples: u32,
+    pub fractal: Fractal<T>,
     pub gamma: T,
 
     pub colours: Vec<String>,
@@ -31,13 +31,13 @@ fn main() {
     let params = read_input_args();
 
     // Render the attractor
-    let data = render_attractor(
-        params.start,
+    let data = render_fractal(
         params.centre,
         params.max_iter,
         params.scale,
         params.resolution,
-        &params.attractor,
+        params.fractal,
+        params.super_samples,
     );
 
     // Convert iteration counts to normalised values (0.0 - 1.0)
