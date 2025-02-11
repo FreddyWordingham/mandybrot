@@ -42,8 +42,8 @@ fn main() {
         params.resolution,
         Complex::new(params.start[0], params.start[1]),
         params.radius,
-        params.max_iter,
         params.num_samples,
+        params.max_iter,
         params.draw_after,
         &params.attractor,
     );

@@ -3,8 +3,8 @@ scale: 5.0
 resolution: [1024, 1024]
 
 start: [0.0, 0.0]
-radius: 1.0
-num_samples: 10000
+radius: 0.01
+num_samples: 10000000
 max_iter: 1000
 draw_after: 10
 
@@ -15,8 +15,8 @@ attractor: !Clifford
   d: 1.2
 
 image_name: "clifford.png"
-log: False
-gamma: 0.2
+log: True
+gamma: 1.0
 colours:
   - "#00007F"
   - "#0000FF"
