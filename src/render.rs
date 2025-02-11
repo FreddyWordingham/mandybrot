@@ -1,7 +1,12 @@
+use indicatif::{ParallelProgressIterator, ProgressBar, ProgressStyle};
 use ndarray::Array2;
-use num_traits::{Float, NumCast};
+use num_traits::{Float, FloatConst, NumCast};
+use rand::{distr::uniform::SampleUniform, rng, Rng};
 use rayon::prelude::*;
-use std::ops::{Add, Div, Mul, Sub};
+use std::{
+    fmt::Display,
+    ops::{Add, Div, Mul, Sub},
+};
 
 use crate::{Attractor, Complex, Fractal};
 
@@ -39,11 +44,22 @@ where
 
     let mut pixels = Array2::<u32>::zeros((y_res as usize, x_res as usize));
 
+    // Create a progress bar for rendering rows.
+    let pb = ProgressBar::new(y_res as u64);
+    pb.set_style(
+        ProgressStyle::with_template(
+            "{spinner:.green} [{elapsed_precise}] {wide_bar} {pos}/{len} ETA: {eta}",
+        )
+        .unwrap()
+        .tick_chars("⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"),
+    );
+
     pixels
         .as_slice_mut()
         .unwrap()
         .par_chunks_mut(x_res as usize)
         .enumerate()
+        .progress_with(pb)
         .for_each(|(y, row)| {
             let y_t = T::from(y).unwrap();
             let pixel_center_y = centre.imag + (y_t + T::from(0.5).unwrap() - half_y_res) * y_step;
@@ -77,7 +93,7 @@ where
     pixels
 }
 
-fn create_position_to_pixel_mapper<T: Float + NumCast + std::fmt::Display>(
+fn create_position_to_pixel_mapper<T: Float + NumCast + Display>(
     offset: Complex<T>,
     scale: T,
     resolution: [u32; 2],
@@ -107,8 +123,78 @@ fn create_position_to_pixel_mapper<T: Float + NumCast + std::fmt::Display>(
     }
 }
 
-/// Renders an attractor by iterating its dynamics and accumulating hits in a pixel grid.
+fn generate_initial_positions<T>(start: Complex<T>, radius: T, num_samples: u32) -> Vec<Complex<T>>
+where
+    T: Float + FloatConst + NumCast + SampleUniform,
+{
+    let mut rng = rng();
+    let mut positions = Vec::with_capacity(num_samples as usize);
+    let zero = T::from(0.0).unwrap();
+    let tau = T::TAU();
+    for _ in 0..num_samples {
+        let theta = rng.random_range(zero..tau);
+        let rho = rng.random_range(zero..radius).sqrt();
+        let x = start.real + rho * theta.cos();
+        let y = start.imag + rho * theta.sin();
+        positions.push(Complex::new(x, y));
+    }
+    positions
+}
+
 pub fn render_attractor<T>(
+    centre: Complex<T>,
+    scale: T,
+    resolution: [u32; 2],
+
+    start: Complex<T>,
+    radius: T,
+    num_samples: u32,
+
+    max_iter: u32,
+    draw_after: u32,
+    attractor: &Attractor<T>,
+) -> Array2<u32>
+where
+    T: Copy
+        + Add<Output = T>
+        + Sub<Output = T>
+        + Mul<Output = T>
+        + Div<Output = T>
+        + PartialOrd
+        + NumCast
+        + Float
+        + FloatConst
+        + SampleUniform
+        + Send
+        + Sync
+        + Display,
+{
+    let initial_positions = generate_initial_positions(start, radius, num_samples);
+
+    // Render and sum attractors concurrently.
+    let pb = ProgressBar::new(initial_positions.len() as u64);
+    pb.set_style(
+        ProgressStyle::with_template(
+            "{spinner:.green} [{elapsed_precise}] {wide_bar} {pos}/{len} ETA: {eta}",
+        )
+        .unwrap()
+        .tick_chars("⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"),
+    );
+
+    let shape = (resolution[1] as usize, resolution[0] as usize);
+    initial_positions
+        .par_iter()
+        .progress_with(pb)
+        .map(|&pos| {
+            render_attractor_path(
+                pos, centre, max_iter, draw_after, scale, resolution, &attractor,
+            )
+        })
+        .reduce(|| Array2::zeros(shape), |a, b| a + b)
+}
+
+/// Renders a single part of a point orbiting an attractor by iterating its dynamics and accumulating hits in a pixel grid.
+fn render_attractor_path<T>(
     start: Complex<T>,
     centre: Complex<T>,
     max_iter: u32,

@@ -1,6 +1,6 @@
 centre: [0.0, 0.0]
 scale: 5.0
-resolution: [512, 512]
+resolution: [1024, 1024]
 
 start: [0.0, 0.0]
 radius: 1.0

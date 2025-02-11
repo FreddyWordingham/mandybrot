@@ -7,7 +7,7 @@ resolution: [1024, 1024]
 
 fractal: !CelticMandelbrot
 max_iter: 50
-super_samples: 2
+super_samples: 8
 
 image_name: "celtic_mandelbrot.png"
 gamma: 1.0

@@ -1,11 +1,7 @@
 use enterpolation::{linear::Linear, Generator};
-use ndarray::parallel::prelude::IntoParallelRefIterator;
-use ndarray::parallel::prelude::ParallelIterator;
-use ndarray::{Array2, Array3};
+use ndarray::Array3;
 use ndarray_images::Image;
-use num_traits::float::FloatConst;
 use palette::{LinSrgb, Srgb};
-use rand::Rng;
 use serde::{Deserialize, Serialize};
 
 use mandybrot::{render_attractor, Attractor, Complex};
@@ -35,49 +31,22 @@ pub struct Parameters<T> {
     pub colours: Vec<String>,
 }
 
-fn generate_initial_positions(
-    start: [Precision; 2],
-    radius: Precision,
-    num_samples: u32,
-) -> Vec<Complex<Precision>> {
-    let mut rng = rand::rng();
-    let mut positions = Vec::with_capacity(num_samples as usize);
-    for _ in 0..num_samples {
-        let theta = rng.random_range(0.0..Precision::TAU());
-        let rho = rng.random_range(0.0..radius).sqrt();
-
-        let x = start[0] + rho * theta.cos();
-        let y = start[1] + rho * theta.sin();
-
-        positions.push(Complex::new(x as Precision, y as Precision));
-    }
-    positions
-}
-
 fn main() {
     // Read parameters from file
     let params = read_input_args();
 
     // Render the attractor
-    let initial_positions =
-        generate_initial_positions(params.start, params.radius, params.num_samples);
-
-    // Render and sum attractors concurrently.
-    let shape = (params.resolution[1] as usize, params.resolution[0] as usize);
-    let data: Array2<u32> = initial_positions
-        .par_iter()
-        .map(|&pos| {
-            render_attractor(
-                pos,
-                Complex::new(params.centre[0], params.centre[1]),
-                params.max_iter,
-                params.draw_after,
-                params.scale,
-                params.resolution,
-                &params.attractor,
-            )
-        })
-        .reduce(|| Array2::zeros(shape), |a, b| a + b);
+    let data = render_attractor(
+        Complex::new(params.centre[0], params.centre[1]),
+        params.scale,
+        params.resolution,
+        Complex::new(params.start[0], params.start[1]),
+        params.radius,
+        params.max_iter,
+        params.num_samples,
+        params.draw_after,
+        &params.attractor,
+    );
 
     // Normalise the data
     let max = *data.iter().max().unwrap() as Precision;
