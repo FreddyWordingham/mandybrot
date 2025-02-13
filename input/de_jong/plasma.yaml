@@ -1,0 +1,21 @@
+centre: [0.0, -0.5]
+scale: 5.0
+resolution: [512, 512]
+super_samples: 2
+
+start: [0.0, 0.0]
+radius: 1.0
+num_samples: 1000000
+max_iter: 1000
+draw_after: 10
+
+attractor: !DeJong
+  a: -1.7
+  b: 1.8
+  c: -1.6
+  d: -0.9
+
+image_name: "de_jong/plasma.png"
+log: True
+gamma: 0.6
+colour_map: "magma"

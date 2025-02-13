@@ -1,0 +1,13 @@
+centre: [-0.45, 0.63]
+scale: 6.0e-2
+resolution: [10880, 2880]
+super_samples: 4
+
+fractal: !Mandelbrot
+max_iter: 1000
+light_dir: [-2.0, -2.0, 1.0]
+
+image_name: mandelbrot.png
+log: True
+gamma: 1.0
+colour_map: inferno

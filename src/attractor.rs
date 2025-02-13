@@ -14,6 +14,46 @@ pub enum Attractor<T> {
     Tinkerbell { a: T, b: T, c: T, d: T },
 }
 
+impl<T: Add<Output = T> + Copy> Attractor<T> {
+    pub fn shift(&mut self, delta: T) {
+        match self {
+            Attractor::Clifford { a, b, c, d } => {
+                *self = Attractor::Clifford {
+                    a: *a + delta,
+                    b: *b,
+                    c: *c,
+                    d: *d,
+                };
+            }
+            Attractor::DeJong { a, b, c, d } => {
+                *self = Attractor::DeJong {
+                    a: *a + delta,
+                    b: *b,
+                    c: *c,
+                    d: *d,
+                };
+            }
+            Attractor::Henon { a, b } => {
+                *self = Attractor::Henon {
+                    a: *a + delta,
+                    b: *b,
+                };
+            }
+            Attractor::Ikeda { u } => {
+                *self = Attractor::Ikeda { u: *u + delta };
+            }
+            Attractor::Tinkerbell { a, b, c, d } => {
+                *self = Attractor::Tinkerbell {
+                    a: *a + delta,
+                    b: *b,
+                    c: *c,
+                    d: *d,
+                };
+            }
+        }
+    }
+}
+
 impl<T> Attractor<T>
 where
     T: Copy + Add<Output = T> + Sub<Output = T> + Mul<Output = T> + PartialOrd + Float + NumCast,

@@ -1,0 +1,21 @@
+centre: [0.0, 0.0]
+scale: 3.0
+resolution: [10880, 2880]
+super_samples: 2
+
+start: [0.0, 0.0]
+radius: 1.0
+num_samples: 10000
+max_iter: 1000
+draw_after: 10
+
+attractor: !Clifford
+  a: -1.7
+  b: 1.8
+  c: -1.9
+  d: 0.4
+
+image_name: "clifford/eye.png"
+log: True
+gamma: 0.6
+colour_map: "magma"

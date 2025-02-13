@@ -1,0 +1,21 @@
+centre: [0.0, 0.0]
+scale: 4.0
+resolution: [512, 512]
+super_sampling: 2
+
+start: [0.0, 0.0]
+radius: 1.0
+num_samples: 10000
+max_iter: 1000
+draw_after: 10
+
+attractor: !Clifford
+  a: -1.4
+  b: 1.6
+  c: 1.0
+  d: 0.7
+
+image_name: "clifford/pi.png"
+log: True
+gamma: 0.6
+colour_map: "jet"

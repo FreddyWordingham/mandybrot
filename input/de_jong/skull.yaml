@@ -1,0 +1,21 @@
+centre: [-0.2, -1.0]
+scale: 4.0
+resolution: [1024, 1024]
+super_samples: null
+
+start: [0.0, 0.0]
+radius: 1.0
+num_samples: 10000
+max_iter: 1000
+draw_after: 10
+
+attractor: !DeJong
+  a: 2.01
+  b: -2.53
+  c: 1.61
+  d: -0.33
+
+image_name: "de_jong/skull.png"
+log: True
+gamma: 0.6
+colour_map: "plasma"

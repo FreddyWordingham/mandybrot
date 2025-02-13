@@ -1,5 +1,9 @@
 # Mandybrot
 
+<p align="center">
+  <img src="./assets/images/attractors/animated.gif" alt="Animated Clifford attractor">
+</p>
+
 Render fractals and attractors with arbitrary precision arithmetic, allowing for high zoom levels.
 
 ## Attractors
@@ -16,7 +20,7 @@ Attractors are mathematical systems that exhibit chaotic behavior. They are defi
 
 ## Fractals
 
-![Fractal](./assets/images/fractals/julia.png)
+![Fractal](./assets/images/fractals/mandelbrot.png)
 
 Fractals are mathematical sets that exhibit self-similarity at all scales. They are rendered by repeatedly applying a complex function to a point and visualising how quickly the result diverges. The following fractals are supported:
 

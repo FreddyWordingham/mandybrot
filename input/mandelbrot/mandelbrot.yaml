@@ -1,0 +1,12 @@
+centre: [-0.5, 0.0]
+scale: 3.0
+resolution: [1024, 1024]
+super_samples: 2
+
+fractal: !Mandelbrot
+max_iter: 100
+light_dir: [-2.0, -2.0, 1.0]
+
+image_name: "mandelbrot.png"
+gamma: 1.0
+colour_map: "pastel"
