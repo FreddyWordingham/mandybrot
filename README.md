@@ -1,7 +1,7 @@
 # Mandybrot
 
 <p align="center">
-  <img src="./assets/images/attractors/animated.gif" alt="Animated Clifford attractor">
+  <img src="./assets/images/attractors/clifford_b.gif" alt="Animated Clifford attractor">
 </p>
 
 Render fractals and attractors with arbitrary precision arithmetic, allowing for high zoom levels.
@@ -32,3 +32,9 @@ Fractals are mathematical sets that exhibit self-similarity at all scales. They 
 - Newton
 - Phoenix
 - Celtic Mandelbrot
+
+<p align="center">
+  <img src="./assets/images/attractors/clifford_a.gif" alt="Another animated Clifford attractor">
+</p>
+
+> Sweeping through the parameter space of the Clifford attractor.

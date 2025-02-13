@@ -35,71 +35,65 @@ pub struct Parameters<T> {
 
 fn main() {
     // Read parameters from file
-    let mut params = read_input_args::<Parameters<Precision>>();
+    let params = read_input_args::<Parameters<Precision>>();
 
     // Create the colour map
     let cmap = create_colour_map(&params.colour_map);
 
-    let t = 0.001;
-    for i in 0..10000 {
-        params.attractor.shift(t);
+    // Render the attractor
+    let data = render_attractor(
+        Complex::new(params.centre[0], params.centre[1]),
+        params.scale,
+        [
+            params.resolution[0] * params.super_samples.unwrap_or(1),
+            params.resolution[1] * params.super_samples.unwrap_or(1),
+        ],
+        Complex::new(params.start[0], params.start[1]),
+        params.radius,
+        params.num_samples,
+        params.max_iter,
+        params.draw_after,
+        &params.attractor,
+    );
 
-        // Render the attractor
-        let data = render_attractor(
-            Complex::new(params.centre[0], params.centre[1]),
-            params.scale,
-            [
-                params.resolution[0] * params.super_samples.unwrap_or(1),
-                params.resolution[1] * params.super_samples.unwrap_or(1),
-            ],
-            Complex::new(params.start[0], params.start[1]),
-            params.radius,
-            params.num_samples,
-            params.max_iter,
-            params.draw_after,
-            &params.attractor,
-        );
+    // Normalise the data
+    let max = *data.iter().max().unwrap() as Precision;
+    let data = if params.log {
+        data.mapv(|v| (v as Precision).ln().max(0.0) / (max as Precision).ln())
+    } else {
+        data.mapv(|v| v as Precision / max as Precision)
+    };
 
-        // Normalise the data
-        let max = *data.iter().max().unwrap() as Precision;
-        let data = if params.log {
-            data.mapv(|v| (v as Precision).ln().max(0.0) / (max as Precision).ln())
-        } else {
-            data.mapv(|v| v as Precision / max as Precision)
-        };
+    // Apply gamma correction
+    let data = data.mapv(|v| v.powf(params.gamma));
 
-        // Apply gamma correction
-        let data = data.mapv(|v| v.powf(params.gamma));
+    // Apply the colour map to convert greyscale values to RGB
+    let mut coloured_data = data.mapv(|v| cmap.gen(v));
 
-        // Apply the colour map to convert greyscale values to RGB
-        let mut coloured_data = data.mapv(|v| cmap.gen(v));
-
-        // Average the super samples
-        if let Some(super_samples) = params.super_samples {
-            coloured_data = downsample(&coloured_data, super_samples as usize);
-        }
-
-        // Convert from `Array2<LinSrgb<Precision>>` to `Array3<Precision>`
-        let (height, width) = coloured_data.dim();
-        let data: Array3<Precision> =
-            Array3::from_shape_fn((height, width, 4), |(y, x, channel)| {
-                let pixel = &coloured_data[(y, x)];
-                match channel {
-                    0 => pixel.red,
-                    1 => pixel.green,
-                    2 => pixel.blue,
-                    3 => pixel.alpha,
-                    _ => unreachable!(),
-                }
-            });
-
-        // Save the image
-        let filename = format!("{}/{}-{:0>6}.png", OUTPUT_DIR, "scan", i);
-        let path = Path::new(&filename);
-        create_dir_all(path.parent().unwrap()).unwrap();
-        data.save(&filename).unwrap();
-        println!("Image saved to '{}'.", filename);
+    // Average the super samples
+    if let Some(super_samples) = params.super_samples {
+        coloured_data = downsample(&coloured_data, super_samples as usize);
     }
+
+    // Convert from `Array2<LinSrgb<Precision>>` to `Array3<Precision>`
+    let (height, width) = coloured_data.dim();
+    let data: Array3<Precision> = Array3::from_shape_fn((height, width, 4), |(y, x, channel)| {
+        let pixel = &coloured_data[(y, x)];
+        match channel {
+            0 => pixel.red,
+            1 => pixel.green,
+            2 => pixel.blue,
+            3 => pixel.alpha,
+            _ => unreachable!(),
+        }
+    });
+
+    // Save the image
+    let filename = format!("{}/{}", OUTPUT_DIR, params.image_name);
+    let path = Path::new(&filename);
+    create_dir_all(path.parent().unwrap()).unwrap();
+    data.save(&filename).unwrap();
+    println!("Image saved to '{}'.", filename);
 }
 
 use ndarray::Array2;

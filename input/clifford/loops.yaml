@@ -1,6 +1,6 @@
 centre: [0.0, -0.2]
 scale: 5.0
-resolution: [512, 512]
+resolution: [1024, 1024]
 super_sampling: 2
 
 start: [0.0, 0.0]
@@ -10,10 +10,10 @@ max_iter: 1000
 draw_after: 10
 
 attractor: !Clifford
-  a: -1.7
-  b: 1.3
-  c: -0.1
-  d: -1.2
+  a: -2.1
+  b: 1.0
+  c: -0.5
+  d: -1.6
 
 image_name: "clifford/loops.png"
 log: True

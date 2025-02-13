@@ -20,23 +20,23 @@ impl<T: Add<Output = T> + Copy> Attractor<T> {
             Attractor::Clifford { a, b, c, d } => {
                 *self = Attractor::Clifford {
                     a: *a + delta,
-                    b: *b,
-                    c: *c,
-                    d: *d,
+                    b: *b + delta,
+                    c: *c + delta,
+                    d: *d + delta,
                 };
             }
             Attractor::DeJong { a, b, c, d } => {
                 *self = Attractor::DeJong {
                     a: *a + delta,
-                    b: *b,
-                    c: *c,
-                    d: *d,
+                    b: *b + delta,
+                    c: *c + delta,
+                    d: *d + delta,
                 };
             }
             Attractor::Henon { a, b } => {
                 *self = Attractor::Henon {
                     a: *a + delta,
-                    b: *b,
+                    b: *b + delta,
                 };
             }
             Attractor::Ikeda { u } => {
@@ -45,9 +45,9 @@ impl<T: Add<Output = T> + Copy> Attractor<T> {
             Attractor::Tinkerbell { a, b, c, d } => {
                 *self = Attractor::Tinkerbell {
                     a: *a + delta,
-                    b: *b,
-                    c: *c,
-                    d: *d,
+                    b: *b + delta,
+                    c: *c + delta,
+                    d: *d + delta,
                 };
             }
         }
